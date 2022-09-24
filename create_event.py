@@ -7,7 +7,12 @@ from datetime import datetime, date
 import pickle, os.path, sys, re
 
 # Define the SCOPES. If modifying it, delete the token.pickle file.
-SCOPES = ["https://mail.google.com/", "https://www.googleapis.com/auth/calendar"]
+SCOPES = [
+    "https://mail.google.com/",
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+    ]
 
 
 def main():
@@ -67,7 +72,6 @@ def main():
     messages = result.get("messages")
 
     try:
-
         if messages:  # If there are any messages, iterate or else sys.exit()
             # iterate through all the messages
             for msg in messages:  # main iteration
@@ -92,6 +96,7 @@ def main():
                             subject = d[
                                 "value"
                             ]  # then puts Subject's value in subject variable
+                            break
 
                     if (
                         "Create Google Calendar Event#" in subject
@@ -243,11 +248,12 @@ def format_reservation_iso(reservation_date):
     if matches:
         reservation_date = reservation_date.replace(matches.group(1), "")
 
-    # split up reservation date so we can compare months to see if date has already passed or not
+     # split up reservation date so we can compare months to see if date has already passed or not
+    # to datetime object
     reservation_date = datetime.strptime(reservation_date, "%A, %B %d").date()
-    reservation_month, reservation_day = (
-        str(reservation_date).replace("1900-", "").split("-")
-    )
+    # now unpack as a string to month and day using strftime
+    reservation_month, reservation_day = reservation_date.strftime("%m %d").split(" ")
+    # convert month and day to int for comparisons below
     reservation_month, reservation_day = int(reservation_month), int(reservation_day)
 
     # if the check-in month is behind current month, the check-in year is next year,
@@ -283,3 +289,5 @@ def get_calendar_id(s):  # this gets the correct Google Calendar ID
 
 if __name__ == "__main__":
     main()
+
+# print(f"create test {datetime.now()}")

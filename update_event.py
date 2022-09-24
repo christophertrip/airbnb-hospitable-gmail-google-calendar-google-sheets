@@ -7,7 +7,12 @@ from datetime import datetime, date
 import pickle, os.path, sys, re
 
 # Define the SCOPES. If modifying it, delete the token.pickle file.
-SCOPES = ["https://mail.google.com/", "https://www.googleapis.com/auth/calendar"]
+SCOPES = [
+    "https://mail.google.com/",
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+    ]
 
 
 def main():
@@ -67,17 +72,17 @@ def main():
     messages = result.get("messages")
 
     try:
-
-        if messages:  # If there are any messages, iterate or else sys.exit()
+        if messages:  # If there are any messages, iterate else sys.exit()
             # iterate through all the messages
             for msg in messages:  # main iteration
-                # Get the message from its ID
+                # Get the message from its id
                 txt = (
                     serviceGmail.users()
                     .messages()
                     .get(userId="me", id=msg["id"])
                     .execute()
                 )
+
                 # Use try-except to avoid any Errors
                 try:
                     # Get value of 'payload' from dictionary 'txt'
@@ -92,16 +97,17 @@ def main():
                             subject = d[
                                 "value"
                             ]  # then puts Subject's value in subject variable
+                            break
 
                     if (
-                        "Create Google Calendar Event#" in subject
-                    ):  # only keep going if it's a new Event otherwise go to beginning of loop to next message
+                        "Update Google Calendar Event#" in subject
+                    ):  # only keep going if it's an Event update otherwise go to beginning of loop to next message
                         pass
                     else:
                         continue
 
                     # Remove what we don't need from the Subject
-                    subject = subject.replace("Create Google Calendar Event#", "")
+                    subject = subject.replace("Update Google Calendar Event#", "")
 
                     # Put the reservation info we need in multiple variables
                     (
@@ -109,9 +115,6 @@ def main():
                         cal_total,
                         cal_children,
                         cal_infants,
-                        cal_phone,
-                        cal_whatsapp,
-                        cal_email,
                         cal_checkin,
                         cal_checkout,
                         cal_airbnb_listing_id,
@@ -137,8 +140,9 @@ def main():
                     cal_checkin = format_reservation_iso(cal_checkin)
                     cal_checkout = format_reservation_iso(cal_checkout)
 
+                    # Don't need to worry about Description when updating.
                     # Create Calendar event description from available varaiables
-                    cal_description = f"{cal_phone}\n\n{cal_whatsapp}\n\n{cal_email}"
+                    # cal_description = f"{cal_event_name}\n\n{cal_phone}\n\n{cal_whatsapp}\n\n{cal_email}"
 
                     # Go get the correct Google Calendar ID
                     gcal_id = get_calendar_id(cal_airbnb_listing_id)
@@ -146,32 +150,42 @@ def main():
                     # Connect to the Google Calendar API
                     serviceCalendar = build("calendar", "v3", credentials=creds)
 
-                    # Create Calendar Event
-                    event_request_body = {
-                        "summary": cal_event_name,
-                        "description": cal_description,
-                        "start": {
-                            "dateTime": f"{cal_checkin}T15:00:00-05:00",
-                            "timeZone": "America/Cancun",
-                        },
-                        "end": {
-                            "dateTime": f"{cal_checkout}T11:00:00-05:00",
-                            "timeZone": "America/Cancun",
-                        },
-                    }
+                    # Search Calendar by Name of guest (cal_event_name) for existing Event/Reservation
+                    page_token = None
+                    while True:
+                        events = (
+                            serviceCalendar.events()
+                            .list(calendarId=gcal_id, q=cal_name, pageToken=page_token)
+                            .execute()
+                        )
+                        if events:
+                            for event in events["items"]:
+                                event["summary"] = cal_event_name
+                                event["start"] = {
+                                    "dateTime": f"{cal_checkin}T15:00:00-05:00",
+                                    "timeZone": "America/Cancun",
+                                }
+                                event["end"] = {
+                                    "dateTime": f"{cal_checkout}T11:00:00-05:00",
+                                    "timeZone": "America/Cancun",
+                                }
+                                # Update existing Event
+                                serviceCalendar.events().update(
+                                    calendarId=gcal_id, eventId=event["id"], body=event
+                                ).execute()
 
-                    # This creates the Calendar Event
-                    serviceCalendar.events().insert(
-                        calendarId=gcal_id, body=event_request_body
-                    ).execute()
-
-                    # Move the message to the Trash after we are done with it.
-                    serviceGmail.users().messages().trash(
-                        userId="me", id=msg["id"]
-                    ).execute()
-                    # Or below will permanently delete the message when we are done with it.
-                    # serviceGmail.users().messages().delete(userId='me', id=msg['id']).execute()
-
+                                # Move the message to the Trash after we are done with it.
+                                serviceGmail.users().messages().trash(
+                                userId="me", id=msg["id"]
+                                ).execute()
+                                # Or below will permanently delete the message when we are done with it.
+                                # serviceGmail.users().messages().delete(userId='me', id=msg['id']).execute()
+                            
+                            page_token = events.get("nextPageToken")
+                            if not page_token:
+                                break
+                        else:
+                            sys.exit("No matching events")
                 except:
                     pass
         else:  # Exit if there are no messages
@@ -243,11 +257,12 @@ def format_reservation_iso(reservation_date):
     if matches:
         reservation_date = reservation_date.replace(matches.group(1), "")
 
-    # split up reservation date so we can compare months to see if date has already passed or not
+     # split up reservation date so we can compare months to see if date has already passed or not
+    # to datetime object
     reservation_date = datetime.strptime(reservation_date, "%A, %B %d").date()
-    reservation_month, reservation_day = (
-        str(reservation_date).replace("1900-", "").split("-")
-    )
+    # now unpack as a string to month and day using strftime
+    reservation_month, reservation_day = reservation_date.strftime("%m %d").split(" ")
+    # convert month and day to int for comparisons below
     reservation_month, reservation_day = int(reservation_month), int(reservation_day)
 
     # if the check-in month is behind current month, the check-in year is next year,
@@ -283,3 +298,5 @@ def get_calendar_id(s):  # this gets the correct Google Calendar ID
 
 if __name__ == "__main__":
     main()
+
+# print(f"update test {datetime.now()}")
