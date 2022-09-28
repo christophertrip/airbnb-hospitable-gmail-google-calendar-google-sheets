@@ -187,14 +187,11 @@ def main():
 
 def guest_types(total_people, children, infants):
 
-    total_people = re.sub(r"\s\bpeople\b", "", total_people)
-    total_people = int(total_people)
+    total_people = int(re.sub(r"\s\bpeople\b", "", total_people))
 
-    children = re.sub(r"\s\bchildren\b|\s\bchild\b", "", children)
-    children = int(children)
+    children = int(re.sub(r"\s\bchildren\b|\s\bchild\b", "", children))
 
-    infants = re.sub(r"\s\binfants\b|\s\binfant\b", "", infants)
-    infants = int(infants)
+    infants = int(re.sub(r"\s\binfants\b|\s\binfant\b", "", infants))
 
     total_adults = total_people - children - infants
 

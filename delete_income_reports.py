@@ -230,30 +230,30 @@ def main():
                                 "fields": "pixelSize",
                             }
                         },
-                        # {
-                        #     "updateDimensionProperties": {
-                        #         "range": {
-                        #             "sheetId": gsheet_id,
-                        #             "dimension": "COLUMNS",
-                        #             "startIndex": 4,
-                        #             "endIndex": 5,
-                        #         },
-                        #         "properties": {"pixelSize": 110},
-                        #         "fields": "pixelSize",
-                        #     }
-                        # },
-                        # {
-                        #     "updateDimensionProperties": {
-                        #         "range": {
-                        #             "sheetId": gsheet_id,
-                        #             "dimension": "COLUMNS",
-                        #             "startIndex": 5,
-                        #             "endIndex": 6,
-                        #         },
-                        #         "properties": {"pixelSize": 110},
-                        #         "fields": "pixelSize",
-                        #     }
-                        # }, #below is for auto-resize but doesn't seem to work to well
+                        {
+                            "updateDimensionProperties": {
+                                "range": {
+                                    "sheetId": gsheet_id,
+                                    "dimension": "COLUMNS",
+                                    "startIndex": 4,
+                                    "endIndex": 5,
+                                },
+                                "properties": {"pixelSize": 110},
+                                "fields": "pixelSize",
+                            }
+                        },
+                        {
+                            "updateDimensionProperties": {
+                                "range": {
+                                    "sheetId": gsheet_id,
+                                    "dimension": "COLUMNS",
+                                    "startIndex": 5,
+                                    "endIndex": 6,
+                                },
+                                "properties": {"pixelSize": 110},
+                                "fields": "pixelSize",
+                            }
+                        }, #below is for auto-resize but doesn't seem to work to well
                         # {
                         #     "autoResizeDimensions": {
                         #         "dimensions": {
