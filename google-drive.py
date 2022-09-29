@@ -53,7 +53,7 @@ def main():
         with open((the_path + "token.pickle"), "wb") as token:
             pickle.dump(creds, token)
 
-###################################################
+    ###################################################
 
     cleaning_form_gsheets_id = "1d8M5sx0n8YlAP_Tw6Ra0qM7FBavyFm3jFpQapPmOpcs"
 
@@ -81,7 +81,7 @@ def main():
             cleaning_folder = datetime.strptime(
                 cleaning_week_ending_date, "%m/%d/%Y"
             ).date()
-            
+
             # now unpack as a string to month and year using strftime
             expense_gsheets_tab = cleaning_folder.strftime("%B %Y")
             cleaning_folder_month, cleaning_folder_year = expense_gsheets_tab.split(" ")
@@ -92,7 +92,7 @@ def main():
 
             values = [
                 ["Yes"],
-                    ]
+            ]
             body = {"values": values}
 
             gsheets_range = f"Cleaning Service Form!J{current_row_number}"
@@ -108,19 +108,25 @@ def main():
             # Connect to the Google Drive API
             serviceDrive = build("drive", "v3", credentials=creds)
 
-            expense_receipts_folder_id, expense_sheets_id = get_expense_drive_ids(property_name)
+            expense_receipts_folder_id, expense_sheets_id = get_expense_drive_ids(
+                property_name
+            )
             ##################################################################
             query = f"parents = '{expense_receipts_folder_id}'"
             response = serviceDrive.files().list(q=query).execute()
             files = response.get("files")
             nextPageToken = response.get("nextPageToken")
-            
+
             # Add to file list if there is another page of files
             while nextPageToken:
-                response = serviceDrive.files().list(q=query,pageToken=nextPageToken).execute()
+                response = (
+                    serviceDrive.files()
+                    .list(q=query, pageToken=nextPageToken)
+                    .execute()
+                )
                 files.extend(response.get("files"))
                 nextPageToken = response.get("nextPageToken")
-            
+
             # Searching main folder (year)
             for _file in response["files"]:
                 if _file["name"] == cleaning_folder_year:
@@ -134,7 +140,11 @@ def main():
 
             # Add to file list if there is another page of files
             while nextPageToken:
-                response = serviceDrive.files().list(q=query,pageToken=nextPageToken).execute()
+                response = (
+                    serviceDrive.files()
+                    .list(q=query, pageToken=nextPageToken)
+                    .execute()
+                )
                 files.extend(response.get("files"))
                 nextPageToken = response.get("nextPageToken")
 
@@ -147,7 +157,7 @@ def main():
             serviceDrive.files().update(
                 fileId=water_service_pdf_id,
                 addParents=expense_month_folder_id,
-                removeParents="1sNcSK9af7iOyIP3wRF1T4frhaQuHNpKUsrgkExBjPHdtZVSm0QClNiYvX3OAg8dXomiJXno3", # Cleaning form Water Service uploads folder
+                removeParents="1sNcSK9af7iOyIP3wRF1T4frhaQuHNpKUsrgkExBjPHdtZVSm0QClNiYvX3OAg8dXomiJXno3",  # Cleaning form Water Service uploads folder
             ).execute()
 
             ###############################################################
@@ -155,7 +165,12 @@ def main():
             gsheets_range = f"{expense_gsheets_tab}!A1:D20"
 
             values = [
-                ["Water Service", cleaning_week_ending_date, water_service_amount, "Chris"],
+                [
+                    "Water Service",
+                    cleaning_week_ending_date,
+                    water_service_amount,
+                    "Chris",
+                ],
             ]
             body = {"values": values}
 
@@ -184,6 +199,7 @@ def main():
         else:
             continue
         ###############################################################
+
 
 def get_expense_drive_ids(s):
     if s == "Terrazas 302":
