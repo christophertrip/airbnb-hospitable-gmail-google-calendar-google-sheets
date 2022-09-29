@@ -111,7 +111,9 @@ def main():
             expense_receipts_folder_id, expense_sheets_id = get_expense_drive_ids(
                 property_name
             )
+            
             ##################################################################
+            
             query = f"parents = '{expense_receipts_folder_id}'"
             response = serviceDrive.files().list(q=query).execute()
             files = response.get("files")
@@ -132,7 +134,9 @@ def main():
                 if _file["name"] == cleaning_folder_year:
                     expense_year_folder_id = _file["id"]
                     break
+                    
             ##################################################################
+            
             query = f"parents = '{expense_year_folder_id}'"
             response = serviceDrive.files().list(q=query).execute()
             files = response.get("files")
@@ -198,8 +202,8 @@ def main():
             ).execute()
         else:
             continue
+            
         ###############################################################
-
 
 def get_expense_drive_ids(s):
     if s == "Terrazas 302":
