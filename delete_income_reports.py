@@ -58,19 +58,19 @@ def main():
         # Connect to the Gmail API
     serviceGmail = build("gmail", "v1", credentials=creds)
 
-    # We get only messages with the label ID "Label_5005393637772983410"
+    # We get only messages with the label ID ""
     # (the "Airbnb Automation" label)
     result = (
         serviceGmail.users()
         .messages()
-        .list(labelIds=["Label_5005393637772983410"], userId="me")
+        .list(labelIds=[""], userId="me")
         .execute()
     )
 
     # Previously, we were checking for UNREAD for the messages labeled "Airbnb Automation"
     # but no longer need to because we are moving each message to the Trash in each iteration
     # result =
-    # serviceGmail.users().messages().list(labelIds=['Label_5005393637772983410','UNREAD'], userId='me').execute()
+    # serviceGmail.users().messages().list(labelIds=['','UNREAD'], userId='me').execute()
     messages = result.get("messages")
 
     try:
