@@ -56,7 +56,7 @@ def main():
     # Connect to the Gmail API
     serviceGmail = build("gmail", "v1", credentials=creds)
 
-    # We get only messages with the label ID "Label_5005393637772983410"
+    # We get only messages with the label ID ""
     # (the "Airbnb Automation" label)
     result = (
         serviceGmail.users()
