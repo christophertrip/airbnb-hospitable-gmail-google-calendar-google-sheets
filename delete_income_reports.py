@@ -339,12 +339,12 @@ def format_reservation_iso(reservation_date):
 
 
 def get_sheets_id(s):  # this gets the correct Google Sheets ID
-    if s == "23683545":
-        gsheets_id = "1ibYqy6eGuqrhxrR70Qti1DZrS4LdAqCs8z5LER8hy-E"
-    elif s == "44290026":
-        gsheets_id = "1CUVuN4vupVjsSK3trIJtzJDod9NPPYOlZxysUVCwxcU"
-    elif s == "670197674052387267":
-        gsheets_id = "1Psa8plAoMUcPxvdv7xENXakNMIBFVa1HUMHERX_nkOA"
+    if s == "":
+        gsheets_id = "-E"
+    elif s == "":
+        gsheets_id = ""
+    elif s == "":
+        gsheets_id = ""
     else:
         sys.exit("Problem with Sheets ID function")
 
