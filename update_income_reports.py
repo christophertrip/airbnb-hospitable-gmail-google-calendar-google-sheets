@@ -56,19 +56,19 @@ def main():
         # Connect to the Gmail API
     serviceGmail = build("gmail", "v1", credentials=creds)
 
-    # We get only messages with the label ID "Label_5005393637772983410"
+    # We get only messages with the label ID ""
     # (the "Airbnb Automation" label)
     result = (
         serviceGmail.users()
         .messages()
-        .list(labelIds=["Label_5005393637772983410"], userId="me")
+        .list(labelIds=[""], userId="me")
         .execute()
     )
 
     # Previously, we were checking for UNREAD for the messages labeled "Airbnb Automation"
     # but no longer need to because we are moving each message to the Trash in each iteration
     # result =
-    # serviceGmail.users().messages().list(labelIds=['Label_5005393637772983410','UNREAD'], userId='me').execute()
+    # serviceGmail.users().messages().list(labelIds=['','UNREAD'], userId='me').execute()
     messages = result.get("messages")
 
     try:
@@ -348,11 +348,11 @@ def format_reservation_iso(reservation_date):
 
 def get_sheets_id(s):  # this gets the correct Google Sheets ID
     if s == "23683545":
-        gsheets_id = "1ibYqy6eGuqrhxrR70Qti1DZrS4LdAqCs8z5LER8hy-E"
-    elif s == "44290026":
-        gsheets_id = "1CUVuN4vupVjsSK3trIJtzJDod9NPPYOlZxysUVCwxcU"
-    elif s == "670197674052387267":
-        gsheets_id = "1Psa8plAoMUcPxvdv7xENXakNMIBFVa1HUMHERX_nkOA"
+        gsheets_id = "-E"
+    elif s == "":
+        gsheets_id = ""
+    elif s == "":
+        gsheets_id = ""
     else:
         sys.exit("Problem with Sheets ID function")
 
@@ -374,7 +374,7 @@ def get_total_after_cleaning_and_tax(
     # It's never exact but at the moment 9-23-2022
     # MX withholding VAT is ~7.1% MX withholding income is ~3.55%
     # combining them and using 10.665% is accurate
-    if property_id == "44290026" or property_id == "670197674052387267":
+    if property_id == "44290026" or property_id == "":
         net_total -= round((net_total * 0.10665), 2)
 
     net_total -= cleaning_fee
