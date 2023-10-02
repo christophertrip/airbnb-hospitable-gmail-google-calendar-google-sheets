@@ -55,7 +55,7 @@ def main():
 
     ###################################################
 
-    cleaning_form_gsheets_id = "1d8M5sx0n8YlAP_Tw6Ra0qM7FBavyFm3jFpQapPmOpcs"
+    cleaning_form_gsheets_id = ""
 
     # Connect to the Google Sheets API
     serviceSheets = build("sheets", "v4", credentials=creds)
@@ -71,7 +71,7 @@ def main():
         if cleaning_form_sheet_response["values"]:
             # Looking for the row number within the name/reservation
             for _value in cleaning_form_sheet_response["values"]:
-                if _value[2] == "Terrazas 302" and _value[3] and len(_value) == 7:
+                if _value[2] == "" and _value[3] and len(_value) == 7:
                     
                     # Get working row number
                     current_row_number = cleaning_form_sheet_response["values"].index(_value) + 1
@@ -165,7 +165,7 @@ def main():
                     serviceDrive.files().update(
                         fileId=water_service_pdf_id,
                         addParents=expense_month_folder_id,
-                        removeParents="1sNcSK9af7iOyIP3wRF1T4frhaQuHNpKUsrgkExBjPHdtZVSm0QClNiYvX3OAg8dXomiJXno3",  # Cleaning form Water Service uploads folder
+                        removeParents="",  # Cleaning form Water Service uploads folder
                     ).execute()
 
                     ###############################################################
@@ -214,8 +214,8 @@ def main():
 
 def get_expense_drive_ids(s):
     if s == "Terrazas 302":
-        expense_receipts_folder_id = "1-1ZNm2zutHfohDODCcaEO6xikExA3asp"
-        expense_sheets_id = "1DG27ULzS92jK1ZYeKPZeMlJBlJ9vJP5OuK8MGR3XBHw"
+        expense_receipts_folder_id = ""
+        expense_sheets_id = ""
     else:
         sys.exit("Problem with Sheets ID function")
 
