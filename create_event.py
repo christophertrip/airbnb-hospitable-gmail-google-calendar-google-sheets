@@ -61,14 +61,14 @@ def main():
     result = (
         serviceGmail.users()
         .messages()
-        .list(labelIds=["Label_5005393637772983410"], userId="me")
+        .list(labelIds=[""], userId="me")
         .execute()
     )
 
     # Previously, we were checking for UNREAD for the messages labeled "Airbnb Automation"
     # but no longer need to because we are moving each message to the Trash in each iteration
     # result =
-    # serviceGmail.users().messages().list(labelIds=['Label_5005393637772983410','UNREAD'], userId='me').execute()
+    # serviceGmail.users().messages().list(labelIds=['','UNREAD'], userId='me').execute()
     messages = result.get("messages")
 
     try:
@@ -272,12 +272,12 @@ def format_reservation_iso(reservation_date):
 
 
 def get_calendar_id(s):  # this gets the correct Google Calendar ID
-    if s == "23683545":
-        gcal_id = "lgfmqv4o9q27f4afc3ml3no3ik@group.calendar.google.com"
-    elif s == "44290026":
-        gcal_id = "fuh78sb1opc86r2jmolflhnmfc@group.calendar.google.com"
-    elif s == "670197674052387267":
-        gcal_id = "8l321gb0rjua7bt6p89mi34qqc@group.calendar.google.com"
+    if s == "":
+        gcal_id = "@group.calendar.google.com"
+    elif s == "":
+        gcal_id = "@group.calendar.google.com"
+    elif s == "":
+        gcal_id = "@group.calendar.google.com"
     else:
         gcal_id = "primary"
 
